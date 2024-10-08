@@ -3,8 +3,9 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Textbox from "../components/Textbox";
 import Button from "../components/Button";
+import { useSelector } from "react-redux";
 const Login = () => {
-  const user = "";
+  const { user } = useSelector((state) => state.auth);
   const {
     register,
     handleSubmit,
@@ -13,8 +14,9 @@ const Login = () => {
 
   const navigate = useNavigate();
   const submitHandler = async (data) => {
-    console.log("submit",data);
+    console.log("submit", data);
   };
+  console.log("user ", user);
 
   useEffect(() => {
     user && navigate("/dashboard");
@@ -25,7 +27,7 @@ const Login = () => {
         {/* left side  */}
         <div className="h-full w-full lg:w-2/3 flex flex-col items-center justify-center">
           <div className="w-full md:max-w-lg 2xl:max-w-3xl flex flex-col items-center justify-center gap-5 md:gap-y-10 2xl:-mt-20">
-            <span className="flex gap-1 py-1 px-3 border rounded-full text-sm md:text-base border-gray-300  text-gray-600">
+            <span className="flex gap-1 py-1 px-3 mt-5 md:mt-0 border rounded-full text-sm md:text-base border-gray-300  text-gray-600">
               Manage all your task in one place!
             </span>
             <p className="flex flex-col gap-0 md:gap-4 text-4xl md:text-6xl 2xl:text-7xl font-black text-center text-blue-700">
@@ -38,7 +40,7 @@ const Login = () => {
           </div>
         </div>
         {/* right side  */}
-        <div className="w-full md:w-1/3 p-4 md:p-1 flex flex-col justify-center items-center">
+        <div className="w-full md:w-1/3 p-4 md:p-1 mb-5 md:mb-0 flex flex-col justify-center items-center">
           <form
             onSubmit={handleSubmit(submitHandler)}
             className="form-container w-full md:w-[400px] flex flex-col gap-y-8 bg-white px-10 pt-14 pb-14"
