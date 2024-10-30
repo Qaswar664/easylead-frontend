@@ -1,5 +1,5 @@
 import React from "react";
-import { FaTasks, FaTrashAlt } from "react-icons/fa";
+import { FaTasks, FaTrashAlt, FaUsers } from "react-icons/fa";
 import {
   MdDashboard,
   MdOutlineAddTask,
@@ -30,13 +30,18 @@ const linkData = [
   },
   {
     label: "In Progress",
-    link: "in-progress",
+    link: "in-progress/:status",
     icon: <MdOutlinePendingActions />,
   },
   {
     label: "To Do",
-    link: "todo",
+    link: "todo/:status",
     icon: <MdOutlinePendingActions />,
+  },
+  {
+    label: "Team",
+    link: "team",
+    icon: <FaUsers />,
   },
   {
     label: "Trash",
@@ -51,7 +56,7 @@ const Sidebar = () => {
   const location = useLocation();
   const path = location.pathname.split("/")[1];
   const sidebarLinks = React.useMemo(
-    () => (user?.isAdmin ? linkData : linkData.slice(0, 5)),
+    () => (user?.isAdmin ? linkData : linkData.slice(0, 8)),
     [user]
   );
 
