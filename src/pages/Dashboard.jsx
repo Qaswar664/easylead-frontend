@@ -14,6 +14,8 @@ import clsx from "clsx";
 import Chart from "../components/Chart";
 import { BGS, getInitials, PRIOTITYSTYELS, TASK_TYPE } from "../utils";
 import UserInfo from "../components/UserInfo";
+import { useGetDashboardStatsQuery } from "../redux/slices/api/taskApiSlice";
+import Loading from "../components/Loader";
 
 const TaskTable = ({ tasks }) => {
   const ICONS = {
@@ -93,26 +95,26 @@ const TaskTable = ({ tasks }) => {
 };
 const UserTable = ({ users }) => {
   const TableHeader = () => (
-    <thead className='border-b border-gray-300 '>
-      <tr className='text-black  text-left'>
-        <th className='py-2'>Full Name</th>
-        <th className='py-2'>Status</th>
-        <th className='py-2'>Created At</th>
+    <thead className="border-b border-gray-300 ">
+      <tr className="text-black  text-left">
+        <th className="py-2">Full Name</th>
+        <th className="py-2">Status</th>
+        <th className="py-2">Created At</th>
       </tr>
     </thead>
   );
 
   const TableRow = ({ user }) => (
-    <tr className='border-b border-gray-200  text-gray-600 hover:bg-gray-400/10'>
-      <td className='py-2'>
-        <div className='flex items-center gap-3'>
-          <div className='w-9 h-9 rounded-full text-white flex items-center justify-center text-sm bg-violet-700'>
-            <span className='text-center'>{getInitials(user?.name)}</span>
+    <tr className="border-b border-gray-200  text-gray-600 hover:bg-gray-400/10">
+      <td className="py-2">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full text-white flex items-center justify-center text-sm bg-violet-700">
+            <span className="text-center">{getInitials(user?.name)}</span>
           </div>
 
           <div>
             <p> {user.name}</p>
-            <span className='text-xs text-black'>{user?.role}</span>
+            <span className="text-xs text-black">{user?.role}</span>
           </div>
         </div>
       </td>
@@ -127,13 +129,13 @@ const UserTable = ({ users }) => {
           {user?.isActive ? "Active" : "Disabled"}
         </p>
       </td>
-      <td className='py-2 text-sm'>{moment(user?.createdAt).fromNow()}</td>
+      <td className="py-2 text-sm">{moment(user?.createdAt).fromNow()}</td>
     </tr>
   );
 
   return (
-    <div className='w-full md:w-1/3 bg-white h-fit px-2 md:px-6 py-4 shadow-md rounded'>
-      <table className='w-full mb-5'>
+    <div className="w-full md:w-1/3 bg-white h-fit px-2 md:px-6 py-4 shadow-md rounded">
+      <table className="w-full mb-5">
         <TableHeader />
         <tbody>
           {users?.map((user, index) => (
@@ -146,13 +148,23 @@ const UserTable = ({ users }) => {
 };
 
 const Dashboard = () => {
-  const totals = summary.tasks;
+  const { data, isLoading, error } = useGetDashboardStatsQuery();
+  console.log("data", data);
+
+  if (isLoading) {
+    return (
+      <div className="py-10">
+        <Loading />
+      </div>
+    );
+  }
+  const totals = data?.tasks;
 
   const stats = [
     {
       _id: "1",
       label: "TOTAL TASK",
-      total: summary?.totalTasks || 0,
+      total: data?.totalTasks || 4,
       icon: <FaNewspaper />,
       bg: "bg-[#1d4ed8]",
     },
@@ -173,7 +185,7 @@ const Dashboard = () => {
     {
       _id: "4",
       label: "TODOS",
-      total: totals["todo"],
+      total: totals["todo"] || 4,
       icon: <FaArrowsToDot />,
       bg: "bg-[#be185d]" || 0,
     },
@@ -211,17 +223,17 @@ const Dashboard = () => {
         <h4 className="text-xl text-gray-600 font-semibold">
           Chart by Priority
         </h4>
-        <Chart />
+        <Chart data={data?.graphData} />
       </div>
       {/* Dashboard content  */}
       <div className="w-full flex flex-col md:flex-row gap-4 2xl:gap-10 py-8">
         {/* /left */}
 
-        <TaskTable tasks={summary.last10Task} />
+        <TaskTable tasks={data?.last10Task} />
 
         {/* /right */}
 
-        <UserTable users={summary.users} />
+        <UserTable users={data?.users} />
       </div>
     </div>
   );

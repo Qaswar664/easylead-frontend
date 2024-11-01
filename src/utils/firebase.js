@@ -13,9 +13,9 @@ const firebaseConfig = {
   storageBucket: "taskmanager-fe7b1.appspot.com",
   messagingSenderId: "767735551351",
   appId: "1:767735551351:web:6ea4ca533f4fb5ab7c7d72",
-  measurementId: "G-6B51N1WLXL"
+  measurementId: "G-6B51N1WLXL",
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);

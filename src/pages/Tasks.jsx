@@ -12,6 +12,7 @@ import { tasks } from "../assets/data";
 import BoardView from "../components/BoardView";
 import Table from "../components/task/Table";
 import AddTask from "../components/task/AddTask";
+import { useGetAllTaskQuery } from "../redux/slices/api/taskApiSlice";
 const TABS = [
   { title: "Board View", icon: <MdGridView /> },
   { title: "List View", icon: <FaList /> },
@@ -23,21 +24,39 @@ const TASK_TYPE = {
   completed: "bg-green-600",
 };
 const Tasks = () => {
-  const params = useParams();
+  const location = window.location.pathname;
+  const status = location.includes("completed")
+    ? "completed"
+    : location.includes("in-progress")
+    ? "in progress"
+    : location.includes("todo")
+    ? "todo"
+    : "";
+
   const [selected, setSelected] = useState(0);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const status = params?.status || "";
+  const { data, isLoading } = useGetAllTaskQuery({
+    strQuery: status,
+    isTrashed: "",
+    search: "",
+  });
 
-  return loading ? (
+  return isLoading ? (
     <div className="py-10">
       <Loading />
     </div>
   ) : (
     <div className="w-full">
       <div className="flex items-center justify-between mb-4">
-        <Title title={status ? `${status} Tasks` : "Tasks"} />
+        <Title
+          title={
+            status
+              ? `${status.charAt(0).toUpperCase() + status.slice(1)} Tasks`
+              : "Tasks"
+          }
+        />
         {!status && (
           <Button
             onClick={() => setOpen(true)}
@@ -58,12 +77,12 @@ const Tasks = () => {
             <TaskTitle label="completed" className={TASK_TYPE.completed} />
           </div>
         )}
-      
+
         {selected !== 1 ? (
-          <BoardView tasks={tasks} />
+          <BoardView tasks={data?.tasks} />
         ) : (
           <div className="w-full">
-            <Table tasks={tasks} />
+            <Table tasks={data?.tasks} />
           </div>
         )}
       </Tabs>
