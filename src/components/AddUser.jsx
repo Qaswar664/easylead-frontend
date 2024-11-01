@@ -6,7 +6,10 @@ import { Dialog } from "@headlessui/react";
 import Textbox from "./Textbox";
 import Loading from "./Loader";
 import Button from "./Button";
-import { useUpdateUserMutation } from "../redux/slices/api/userApiSlice";
+import {
+  useGetTeamListQuery,
+  useUpdateUserMutation,
+} from "../redux/slices/api/userApiSlice";
 import { toast } from "sonner";
 import { setCredentials } from "../redux/slices/authSlice";
 import { useRegisterMutation } from "../redux/slices/api/authApiSlice";
@@ -24,13 +27,14 @@ const AddUser = ({ open, setOpen, userData }) => {
 
   const [addNewUser, { isLoading }] = useRegisterMutation();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
+  const { refetch } = useGetTeamListQuery();
 
   const handleOnSubmit = async (data) => {
     try {
       if (userData) {
         const result = await updateUser(data).unwrap();
         toast.success(result?.message);
-        if (userData?._id === user > _id) {
+        if (userData?._id === user._id) {
           dispatch(setCredentials({ ...result.user }));
         }
         // For updating, you can add logic here.
@@ -44,10 +48,11 @@ const AddUser = ({ open, setOpen, userData }) => {
         }).unwrap();
 
         toast.success("New User added successfully");
+        refetch();
       }
       setTimeout(() => {
         setOpen(false);
-      }, 1500);
+      }, 500);
     } catch (error) {
       toast.error("Something went wrong");
     }
