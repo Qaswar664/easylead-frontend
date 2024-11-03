@@ -19,6 +19,8 @@ import {
   useUpdateTaskMutation,
 } from "../../redux/slices/api/taskApiSlice";
 import { toast } from "sonner";
+import { dateFormatter } from "../../utils";
+import { useGetTeamListQuery } from "../../redux/slices/api/userApiSlice";
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
 const PRIORIRY = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
@@ -26,11 +28,19 @@ const PRIORIRY = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
 const uploadedFileURLs = [];
 
 const AddTask = ({ open, setOpen, task }) => {
+  const defaultValues = {
+    title: task?.title || "",
+    date: dateFormatter(task?.date || new Date()),
+    team: [],
+    stage: "",
+    priority: "",
+    assets: [],
+  };
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ defaultValues });
   const [team, setTeam] = useState(task?.team || []);
   const [stage, setStage] = useState(task?.stage?.toUpperCase() || LISTS[0]);
   const [priority, setPriority] = useState(
@@ -43,6 +53,8 @@ const AddTask = ({ open, setOpen, task }) => {
 
   const [createTask, { isLoading }] = useCreateTaskMutation();
   const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
+  const { data: users } = useGetTeamListQuery();
+
   const URLS = task?.assets ? [...task.assets] : [];
 
   const submitHandler = async (data) => {
@@ -137,7 +149,7 @@ const AddTask = ({ open, setOpen, task }) => {
               error={errors.title ? errors.title.message : ""}
             />
 
-            <UserList setTeam={setTeam} team={team} />
+            <UserList setTeam={setTeam} team={team} users={users} />
 
             <div className="flex gap-4">
               <SelectList

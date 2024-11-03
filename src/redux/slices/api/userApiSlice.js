@@ -35,7 +35,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     getNotifications: builder.query({
-      query: (data) => ({
+      query: () => ({
         url: `${USER_URL}/notifications`,
         method: "GET",
         credentials: "include",

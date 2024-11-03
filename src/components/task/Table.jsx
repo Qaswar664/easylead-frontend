@@ -13,6 +13,7 @@ import { FaList } from "react-icons/fa";
 import UserInfo from "../UserInfo";
 import ConfirmatioDialog from "../Dialogs";
 import Button from "../Button";
+import { useTrashTaskMutation } from "../../redux/slices/api/taskApiSlice";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -23,13 +24,30 @@ const ICONS = {
 const Table = ({ tasks }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [trashTask] = useTrashTaskMutation();
 
   const deleteClicks = (id) => {
     setSelected(id);
     setOpenDialog(true);
   };
 
-  const deleteHandler = () => {};
+  const deleteHandler = async () => {
+    try {
+      const res = await trashTask({
+        id: selected, // Ensure selected contains the ID of the task
+        isTrash: true, // or "trash", depending on your backend expectation
+      }).unwrap();
+
+      toast.success(res?.message);
+      setTimeout(() => {
+        setOpenDialog(false);
+        window.location.reload();
+      }, 500);
+    } catch (error) {
+      console.error(error); // Log the error for debugging
+      toast.error(error?.data?.message || error.error);
+    }
+  };
 
   const TableHeader = () => (
     <thead className="w-full border-b border-gray-300">
